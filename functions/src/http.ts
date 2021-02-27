@@ -1,5 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as express from 'express';
+import * as cors from 'cors';
 
 import * as admin from 'firebase-admin';
 admin.initializeApp(); // the admin database can be used to modify
@@ -18,6 +19,8 @@ export const basicHTTP = functions.https.onRequest( (request, response) => {
 
 
 const app = express();
+
+app.use(cors({ origin: true })); // allows middleware for entire app
 
 app.get('/cat', ( req, res ) => {
   res.send('CAT');
