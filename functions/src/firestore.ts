@@ -27,3 +27,25 @@ export const gameCount = functions.firestore
       gameCount 
     });
   });
+
+export const userTrend = functions.firestore
+  .document('games/{gameID}')
+  .onUpdate( (snapshot, context) => { // on update snapshots return both a before an after object
+    const before = snapshot.before.data();
+    const after = snapshot.after.data();
+
+    let trend;
+    if (after.score >= before.score) {
+      trend = 'you are impoving';
+    } else {
+      trend = 'you are declining in performance';
+    }
+
+    const userRef = db.doc(`users/${after.uid}`)
+
+    // be careful not to call an update on the same record, that will cause an 
+    // infinite loop
+    return userRef.update({
+      trend
+    });
+  })
