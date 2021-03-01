@@ -48,4 +48,4 @@ export const userTrend = functions.firestore
     return userRef.update({
       trend
     });
-  })
+  });
