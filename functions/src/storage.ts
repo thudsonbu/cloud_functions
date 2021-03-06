@@ -20,7 +20,7 @@ import { join, dirname } from 'path';
 export const resizeAvatar = functions.storage
   .object()
   .onFinalize( async object => { // on finalize is run when something is saved to the storage bucket
-    const bucket = gcs.bucket(object.bucket); // create ref to bucket to download from 
+    const bucket = gcs.bucket(object.bucket); // create ref to storage bucket to download from 
     
     const filePath = object.name ? object.name : ''; // location where file is stored in bucket
     const fileName = filePath.split('/').pop(); // get file name by spliting on /
@@ -31,19 +31,24 @@ export const resizeAvatar = functions.storage
     const avatarFileName = 'avatar_' + fileName;
     const tmpAvatarPath = join(tmpdir(), avatarFileName);
 
+    // make sure that we dont get caught in an infinite loop as onFinalize is
+    // called every time something is saved
     if (fileName?.includes('avatar_')) {
       console.log('exiting functions'); // exit if already created avatar
       return false;
     }
 
+    // download the image from firestore storage bucket
     await bucket.file(filePath).download({
       destination: tmpFilePath
     });
 
+    // use sharp library to resize the file
     await sharp(tmpFilePath)
       .resize(100, 100)
       .toFile(tmpAvatarPath);
 
+    // return a promise to upload the resized file
     return bucket.upload( tmpAvatarPath, {
       destination: join( dirname(filePath), avatarFileName)
     });
