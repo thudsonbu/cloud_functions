@@ -26,8 +26,10 @@ const db = admin.firestore();
 // take in data and context
 
 /**
- * @param data - whatever data that you pass in from client side code
- * @param context - context about the request like user id...
+ * @param {Object} data - whatever data that you pass in from client side code
+ * @param {Object} context - context about the request like user id...
+ * 
+ * @returns {Promise} - send sms message
  */
 export const sendText = functions.https.onCall( async (data, context) => {
   // get userid from the context that is automaticall given when func called
@@ -45,3 +47,6 @@ export const sendText = functions.https.onCall( async (data, context) => {
     from: '+1234567890'
   });
 });
+
+// at this point, callable functions are not the easiest to test, the best way 
+// to do it is to deploy them in test and call them

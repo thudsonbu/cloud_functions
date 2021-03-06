@@ -6,6 +6,7 @@ admin.initializeApp(); // admin db
 const db = admin.firestore(); // define outside so that db is not declared in 
 // each function
 
+// function that will run whenever a user is created
 export const createUserRecord = functions.auth.user()
   .onCreate( ( user, context ) => {
     const userRef = db.doc(`users/${user.uid}`);
